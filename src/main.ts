@@ -5,13 +5,12 @@ import TransactionHash from "./models/TransactionHash";
 async function main() {
   const client = new Client();
   const url = process.env.BAND_APP_LINK ?? "undefined";
-  const body = {
+  const payload = {
     symbol: "ETH",
     price: 4500,
     timestamp: Date.now(),
   };
-  console.log(body);
-  const data = await client.post<TransactionHash>(url, body);
+  const data = await client.post<TransactionHash>(url, payload);
   if (data.error) {
     console.error("Failed to broadcast transaction : ", data.error);
   } else {
