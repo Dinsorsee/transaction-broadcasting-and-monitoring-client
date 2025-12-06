@@ -1,3 +1,4 @@
+import { ApiResult } from "../api/ApiResult";
 import TransactionInput from "../models/TransactionInput";
 
 class Client {
@@ -9,27 +10,34 @@ class Client {
     this.debug("Client initialized");
   }
 
-  post = async <T>(url: string, body: TransactionInput): Promise<T> => {
-    if (url === "undefined") {
-      throw new Error("undefined env variable");
+  post = async <T>(
+    url: string,
+    body: TransactionInput
+  ): Promise<ApiResult<T>> => {
+    if (!url) {
+      return { data: null, error: "Missing URL" };
     }
     const options: RequestInit = {
       ...this.defaultOptions,
       method: "POST",
       body: JSON.stringify(body),
     };
-    return await this.handleRequest<T>(() => fetch(url, options));
+    return this.handleRequest<T>(() => fetch(url, options));
   };
 
-  handleRequest = async <T>(request: () => Promise<Response>): Promise<T> => {
+  private handleRequest = async <T>(
+    request: () => Promise<Response>
+  ): Promise<ApiResult<T>> => {
     const res = await request();
+
     if (!res.ok) {
-      throw new Error(`HTTP Error ${res.status}`);
+      const errorText = await res.text();
+      return { data: null, error: errorText };
     }
-    return (await res.json()) as T;
+    return { data: await (res.json() as Promise<T>), error: null };
   };
 
-  debug = (message: string) => {
+  private debug = (message: string) => {
     console.log(`[DEBUG] ${message}`);
   };
 }

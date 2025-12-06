@@ -12,7 +12,11 @@ async function main() {
   };
   console.log(body);
   const data = await client.post<TransactionHash>(url, body);
-  console.log(data);
+  if (data.error) {
+    console.error("Failed to broadcast transaction : ", data.error);
+  } else {
+    console.log("Your transaction hash :", data.data?.tx_hash);
+  }
 }
 
 main();
