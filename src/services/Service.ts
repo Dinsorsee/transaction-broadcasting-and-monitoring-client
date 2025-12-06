@@ -50,7 +50,9 @@ export default class Service {
       const errorText = await res.text();
       return { data: null, error: errorText };
     }
-    return { data: await (res.json() as Promise<T>), error: null };
+
+    const json = await res.json();
+    return { data: json as T, error: null };
   };
 
   private debug = (message: string) => {
