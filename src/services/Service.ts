@@ -1,44 +1,41 @@
 import { ApiResult } from "../api/ApiResult";
-import TransactionInput from "../models/TransactionInput";
 
 export default class Service {
   private defaultOptions: RequestInit = {
     headers: { "Content-Type": "application/json" },
   };
+  private readonly baseUrl: string;
 
   constructor() {
+    this.baseUrl = process.env.BAND_APP_LINK ?? "undefined";
     this.debug("Client initialized");
   }
 
-  get = async <T>(transaction_hash: string): Promise<ApiResult<T>> => {
-    if (!transaction_hash) {
-      return { data: null, error: "Incorrect transaction hash" };
+  get = async <T>(path: string): Promise<ApiResult<T>> => {
+    if (!path) {
+      return { data: null, error: "Invalid path" };
     }
     const options: RequestInit = {
       ...this.defaultOptions,
       method: "GET",
     };
     return this.handleRequest<T>(() =>
-      fetch(
-        `https://mock-node-wgqbnxruha-as.a.run.app/check/${transaction_hash}`,
-        options
-      )
+      fetch(`${this.baseUrl}/${path}`, options)
     );
   };
 
-  post = async <T>(
-    url: string,
-    body: TransactionInput
-  ): Promise<ApiResult<T>> => {
-    if (!url) {
-      return { data: null, error: "Missing URL" };
+  post = async <T>(path: string, body: unknown): Promise<ApiResult<T>> => {
+    if (!path) {
+      return { data: null, error: "Invalid path" };
     }
     const options: RequestInit = {
       ...this.defaultOptions,
       method: "POST",
       body: JSON.stringify(body),
     };
-    return this.handleRequest<T>(() => fetch(url, options));
+    return this.handleRequest<T>(() =>
+      fetch(`${this.baseUrl}/${path}`, options)
+    );
   };
 
   private handleRequest = async <T>(

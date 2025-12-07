@@ -13,14 +13,13 @@ export default class Client {
   }
 
   broadcastTransaction = async <TransactionHash>(
-    url: string,
     payload: TransactionInput
   ): Promise<ApiResult<TransactionHash>> => {
-    const data = await this.service.post<TransactionHash>(url, payload);
+    const data = await this.service.post<TransactionHash>("broadcast", payload);
     if (data.error) {
-      console.error("Failed to broadcast transaction :", data.error);
+      console.error("[Error] :", data.error);
     } else {
-      console.log("Your transaction hash :", data.data);
+      console.log("[Your transaction hash] :", data.data);
     }
     return data;
   };
@@ -28,41 +27,37 @@ export default class Client {
   transactionStatusMonitoring = async (
     tx_hash: string
   ): Promise<ApiResult<TransactionStatus>> => {
-    let DEFAULT_RETRY_REQUEST: number = 10;
-    let status = await this.service.get<TransactionStatus>(tx_hash);
+    let maxRetries: number = 10;
+    let status = await this.service.get<TransactionStatus>(`check/${tx_hash}`);
 
-    while (
-      status.data?.tx_status === Status.PENDING &&
-      DEFAULT_RETRY_REQUEST > 0
-    ) {
-      status = await this.service.get<TransactionStatus>(tx_hash);
+    console.log("🖥️  Start Monitoring...");
+    while (status.data?.tx_status === Status.PENDING && maxRetries > 0) {
+      this.logStatus(status);
 
-      if (status.error) {
-        console.error("[Error] :", status.error);
-      } else if (status.data?.tx_status != null) {
-        this.status(status.data?.tx_status);
-      } else {
-        this.status("null");
-      }
-      if (status.data?.tx_status === Status.CONFIRMED) {
-        this.status("Transaction has been confirmed");
-        break;
-      }
-      if (status.data?.tx_status === Status.FAILED) {
-        this.status("Transaction has been failed, please try again");
-        break;
-      }
-      if (DEFAULT_RETRY_REQUEST == 0) {
-        this.status("Time out");
-        break;
-      }
       await sleep(5000);
-      DEFAULT_RETRY_REQUEST--;
+
+      status = await this.service.get<TransactionStatus>(`check/${tx_hash}`);
+      maxRetries--;
     }
+    this.logStatus(status);
     return status;
   };
 
-  private status = (message: string) => {
-    console.log(`[STATUS] ${message}`);
+  private logStatus = (result: ApiResult<TransactionStatus>) => {
+    if (result.error) return console.error("[Error]", result.error);
+    const status = result.data?.tx_status;
+
+    switch (status) {
+      case Status.CONFIRMED:
+        return console.log("[STATUS] CONFIRMED.");
+      case Status.FAILED:
+        return console.log("[STATUS] FAILED.");
+      case Status.PENDING:
+        return console.log("[STATUS] Pending…");
+      case undefined:
+        return console.log("[STATUS] UNDEFINED.");
+      default:
+        return console.log(`[STATUS] UNKNOWN: ${status}`);
+    }
   };
 }
