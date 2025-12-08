@@ -11,7 +11,7 @@ if (data.error) {\
 console.error("Error!")\
 } else {\
 console.log("Success")\
-}\
+}
 
 ## How to run?
 
@@ -33,7 +33,7 @@ tx_hash: '12fb877caf821e39d4dd1c9ab4ee0b22e8b5cd51ebdc5364eab67276da726390'\
 [STATUS] Pending…\
 [STATUS] Pending…\
 [STATUS] CONFIRMED.\
-✨ Done in 22.83s.\
+✨ Done in 22.83s.
 
 ### Function to fulfil the requirements
 
