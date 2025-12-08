@@ -2,7 +2,8 @@
 
 This is a client-side API connection inspired by two concepts in Rust: Result<T, E> and Tracing Subscriber.
 We only provide GET and POST methods, these are written in consideration of further upgrade version.
-A project is intended to be scalable and flexible. To support flexible routing by allowing arbitrary paths to our base URL.
+A project is intended to be scalable and flexible.
+To support flexible routing by allowing arbitrary paths to our base URL, the logic is written separately as client and service layer.
 
 In general use, when each request is completed. We will wrap the response result like this.
 
