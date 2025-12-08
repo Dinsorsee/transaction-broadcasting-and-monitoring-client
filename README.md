@@ -40,5 +40,4 @@ tx_hash: '12fb877caf821e39d4dd1c9ab4ee0b22e8b5cd51ebdc5364eab67276da726390'
    Using POST Method and sends payload to retrieve the transaction hash.
    The returned transaction hash will collect as variable for further use.
 2. Transaction Status Monitoring
-   I decided to categorize the status as ENUM, then periodically fetching the status using the loop with maximum retries limit.
-   Each iteration will be awaited for 5 seconds to mitigate intensive traffic load in the future.
+   I decided to categorize the status as ENUM, then periodically fetching the status using the loop with maximum retries limit. Each iteration will be awaited for 5 seconds to mitigate intensive traffic load in the future.

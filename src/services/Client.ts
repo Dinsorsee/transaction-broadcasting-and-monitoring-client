@@ -27,17 +27,18 @@ export default class Client {
   transactionStatusMonitoring = async (
     tx_hash: string
   ): Promise<ApiResult<TransactionStatus>> => {
-    let maxRetries: number = 10;
+    let attempts: number = 0;
+    const maxRetries: number = 20;
     let status = await this.service.get<TransactionStatus>(`check/${tx_hash}`);
 
     console.log("🖥️  Start Monitoring...");
-    while (status.data?.tx_status === Status.PENDING && maxRetries > 0) {
+    while (status.data?.tx_status === Status.PENDING && attempts < maxRetries) {
       this.logStatus(status);
 
       await sleep(5000);
 
       status = await this.service.get<TransactionStatus>(`check/${tx_hash}`);
-      maxRetries--;
+      attempts++;
     }
     this.logStatus(status);
     return status;
