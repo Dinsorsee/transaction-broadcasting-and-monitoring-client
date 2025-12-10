@@ -12,9 +12,6 @@ export default class Service {
   }
 
   get = async <T>(path: string): Promise<ApiResult<T>> => {
-    if (!path) {
-      return { data: null, error: "Invalid path" };
-    }
     const options: RequestInit = {
       ...this.defaultOptions,
       method: "GET",
@@ -25,9 +22,6 @@ export default class Service {
   };
 
   post = async <T>(path: string, body: unknown): Promise<ApiResult<T>> => {
-    if (!path) {
-      return { data: null, error: "Invalid path" };
-    }
     const options: RequestInit = {
       ...this.defaultOptions,
       method: "POST",
